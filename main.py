@@ -85,7 +85,14 @@ async def telegram_webhook(request: Request):
                 # Le pedimos a Gemini que piense la respuesta
                 if model:
                     try:
-                        gemini_response = model.generate_content(user_text)
+                        personalidad = os.getenv("BOT_PERSONALIDAD")
+                        if personalidad:
+                            # Le recordamos a Gemini cómo debe comportarse antes de pasarle tu texto
+                            prompt = f"Instrucciones sobre tu personalidad: {personalidad}\n\nMensaje del usuario: {user_text}"
+                        else:
+                            prompt = user_text
+                            
+                        gemini_response = model.generate_content(prompt)
                         respuesta = gemini_response.text
                     except Exception as e:
                         respuesta = f"Uy, ha habido un error con Gemini: {str(e)}"
